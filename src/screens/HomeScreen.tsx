@@ -1,20 +1,31 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
-import { Button, Icon, Input, ListItem } from 'react-native-elements';
+import { Button, Icon, ListItem } from 'react-native-elements';
+import { useForm } from 'react-hook-form';
 import { useSearchEvents } from '../api/eventsApi';
 import { useFavouritesStore } from '../store/favouritesStore';
+import { SearchInput, TextInput } from '../components/inputs';
+
+interface SearchForm {
+  keyword: string;
+  city: string;
+}
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [keyword, setKeyword] = useState('');
-  const [city, setCity] = useState('');
   const [shouldSearch, setShouldSearch] = useState(false);
-  const { data, isLoading, error } = useSearchEvents(shouldSearch ? keyword : '', shouldSearch ? city : '');
+  const [searchParams, setSearchParams] = useState({ keyword: '', city: '' });
+  const { data, isLoading, error } = useSearchEvents(shouldSearch ? searchParams.keyword : '', shouldSearch ? searchParams.city : '');
   const { addFavourite, removeFavourite, isFavourite } = useFavouritesStore();
 
-  const handleSearch = () => {
-    if (keyword && city) {
+  const { control, handleSubmit } = useForm<SearchForm>({
+    defaultValues: { keyword: '', city: '' },
+  });
+
+  const onSubmit = (data: SearchForm) => {
+    if (data.keyword && data.city) {
+      setSearchParams(data);
       setShouldSearch(true);
     }
   };
@@ -23,19 +34,22 @@ export default function HomeScreen() {
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
-      <Input
+      <SearchInput
+        control={control}
+        name="keyword"
         label="Keyword"
         placeholder="Search events"
-        value={keyword}
-        onChangeText={setKeyword}
+        rules={{ required: 'Keyword is required' }}
       />
-      <Input
+      <TextInput
+        control={control}
+        name="city"
         label="City"
         placeholder="Enter city"
-        value={city}
-        onChangeText={setCity}
+        leftIcon={{ type: 'material', name: 'location-city' }}
+        rules={{ required: 'City is required' }}
       />
-      <Button title="Search" onPress={handleSearch} containerStyle={{ marginVertical: 12 }} />
+      <Button title="Search" onPress={handleSubmit(onSubmit)} containerStyle={{ marginVertical: 12 }} />
       {isLoading && <ActivityIndicator />}
       {error && <Text>Error loading events</Text>}
       <FlatList

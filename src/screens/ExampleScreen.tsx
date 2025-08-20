@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { SharedInput } from '../components/SharedInput';
+import { TextInput } from '../components/inputs';
 import { useExampleForm } from '../hooks/useExampleForm';
 
 export default function ExampleScreen() {
-  const { control, handleSubmit, formState: { errors, isSubmitting } } = useExampleForm();
+  const { control, handleSubmit, formState: { isSubmitting } } = useExampleForm();
 
   const onSubmit = (data: any) => {
     Toast.show({
@@ -17,12 +17,13 @@ export default function ExampleScreen() {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
-      <SharedInput
+      <TextInput
         control={control}
         name="name"
         label="Name"
         placeholder="Enter your name"
-        error={errors.name?.message}
+        rules={{ required: 'Name is required' }}
+        leftIcon={{ type: 'material', name: 'person' }}
       />
       <Button title={isSubmitting ? 'Submitting...' : 'Submit'} onPress={handleSubmit(onSubmit)} disabled={isSubmitting} />
       <Toast />

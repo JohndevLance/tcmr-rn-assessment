@@ -2,13 +2,13 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 import { Button, ListItem, Switch } from 'react-native-elements';
-import { useToggleLanguage } from '../hooks/useToggleLanguage';
 import { useAuthStore } from '../store/authStore';
 import { useFavouritesStore } from '../store/favouritesStore';
+import { useLanguageStore } from '../store/languageStore';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { isArabic, toggleLanguage } = useToggleLanguage();
+  const { isArabic, toggleLanguage, currentLanguage, languageCode, initializeLanguage } = useLanguageStore();
   const { favourites } = useFavouritesStore();
   const { 
     user, 
@@ -23,7 +23,8 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     checkBiometricAvailability().then(setBiometricAvailable);
-  }, [checkBiometricAvailability]);
+    initializeLanguage(); // Initialize language on component mount
+  }, [checkBiometricAvailability, initializeLanguage]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -38,6 +39,22 @@ export default function ProfileScreen() {
             await logout();
             router.replace('/auth');
           }
+        }
+      ]
+    );
+  };
+
+  const handleLanguageToggle = async () => {
+    const result = await toggleLanguage();
+    
+    // Show success alert with restart message
+    Alert.alert(
+      'Language Changed',
+      `Language changed from ${result.oldLanguage} to ${result.newLanguage}. ${result.requiresRestart ? 'Please restart the app to see the changes in layout direction.' : ''}`,
+      [
+        {
+          text: 'OK',
+          style: 'default'
         }
       ]
     );
@@ -84,7 +101,7 @@ export default function ProfileScreen() {
           </View>
           <View style={{ alignItems: 'center' }}>
             <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#007AFF' }}>
-              {isArabic ? 'AR' : 'EN'}
+              {languageCode.toUpperCase()}
             </Text>
             <Text style={{ color: '#666' }}>Language</Text>
           </View>
@@ -106,10 +123,15 @@ export default function ProfileScreen() {
           <ListItem.Content>
             <ListItem.Title>Language</ListItem.Title>
             <ListItem.Subtitle>
-              {isArabic ? 'Arabic (RTL)' : 'English (LTR)'}
+              {currentLanguage} ({isArabic ? 'RTL' : 'LTR'})
             </ListItem.Subtitle>
           </ListItem.Content>
-          <Button title="Toggle" onPress={toggleLanguage} buttonStyle={{ backgroundColor: '#007AFF' }} />
+          <Button 
+            title={`Switch to ${isArabic ? 'English' : 'Arabic'}`} 
+            onPress={handleLanguageToggle} 
+            buttonStyle={{ backgroundColor: '#007AFF', borderRadius: 6 }}
+            titleStyle={{ fontSize: 14 }}
+          />
         </ListItem>
 
         {biometricAvailable && (

@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
-import { Button, Input, Text } from 'react-native-elements';
+import { Button, Text } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 import { z } from 'zod';
 import { useAuthStore } from '../../store/authStore';
+import { EmailInput, PasswordInput, TextInput } from '../inputs';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -28,7 +29,7 @@ export default function SignupForm({ onSwitchToLogin }: SignupFormProps) {
   const router = useRouter();
   const { signup, isLoading } = useAuthStore();
 
-  const { control, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
+  const { control, handleSubmit } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: { name: '', email: '', password: '', confirmPassword: '' },
   });
@@ -57,72 +58,33 @@ export default function SignupForm({ onSwitchToLogin }: SignupFormProps) {
         Create Account
       </Text>
 
-      <Controller
+      <TextInput
         control={control}
         name="name"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Input
-            label="Full Name"
-            placeholder="Enter your full name"
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            errorMessage={errors.name?.message}
-            leftIcon={{ type: 'material', name: 'person' }}
-          />
-        )}
+        label="Full Name"
+        placeholder="Enter your full name"
+        leftIcon={{ type: 'material', name: 'person' }}
+        rules={{ required: 'Name is required' }}
       />
 
-      <Controller
+      <EmailInput
         control={control}
         name="email"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Input
-            label="Email"
-            placeholder="Enter your email"
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            errorMessage={errors.email?.message}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            leftIcon={{ type: 'material', name: 'email' }}
-          />
-        )}
+        rules={{ required: 'Email is required' }}
       />
 
-      <Controller
+      <PasswordInput
         control={control}
         name="password"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Input
-            label="Password"
-            placeholder="Enter your password"
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            errorMessage={errors.password?.message}
-            secureTextEntry
-            leftIcon={{ type: 'material', name: 'lock' }}
-          />
-        )}
+        rules={{ required: 'Password is required' }}
       />
 
-      <Controller
+      <PasswordInput
         control={control}
         name="confirmPassword"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Input
-            label="Confirm Password"
-            placeholder="Confirm your password"
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            errorMessage={errors.confirmPassword?.message}
-            secureTextEntry
-            leftIcon={{ type: 'material', name: 'lock' }}
-          />
-        )}
+        label="Confirm Password"
+        placeholder="Confirm your password"
+        rules={{ required: 'Please confirm your password' }}
       />
 
       <Button

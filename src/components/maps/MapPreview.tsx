@@ -1,6 +1,6 @@
 import React from 'react';
-import { Dimensions, View, Linking, Platform } from 'react-native';
-import { Text, Button } from 'react-native-elements';
+import { Dimensions, Linking, Platform, View } from 'react-native';
+import { Button, Text } from 'react-native-elements';
 
 interface MapPreviewProps {
   latitude: number;

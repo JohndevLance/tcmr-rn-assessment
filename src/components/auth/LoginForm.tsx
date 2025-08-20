@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
-import { Button, Input, Text } from 'react-native-elements';
+import { Button, Text } from 'react-native-elements';
 import Toast from 'react-native-toast-message';
 import { z } from 'zod';
 import { useAuthStore } from '../../store/authStore';
+import { EmailInput, PasswordInput } from '../inputs';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -24,7 +25,7 @@ export default function LoginForm({ onSwitchToSignup }: LoginFormProps) {
   const { login, loginWithBiometric, isLoading, biometricEnabled, checkBiometricAvailability } = useAuthStore();
   const [showBiometric, setShowBiometric] = useState(false);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+  const { control, handleSubmit } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
@@ -77,39 +78,16 @@ export default function LoginForm({ onSwitchToSignup }: LoginFormProps) {
         Login to City Pulse
       </Text>
 
-      <Controller
+      <EmailInput
         control={control}
         name="email"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Input
-            label="Email"
-            placeholder="Enter your email"
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            errorMessage={errors.email?.message}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            leftIcon={{ type: 'material', name: 'email' }}
-          />
-        )}
+        rules={{ required: 'Email is required' }}
       />
 
-      <Controller
+      <PasswordInput
         control={control}
         name="password"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <Input
-            label="Password"
-            placeholder="Enter your password"
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            errorMessage={errors.password?.message}
-            secureTextEntry
-            leftIcon={{ type: 'material', name: 'lock' }}
-          />
-        )}
+        rules={{ required: 'Password is required' }}
       />
 
       <Button
