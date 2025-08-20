@@ -1,12 +1,12 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { View } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import Toast from 'react-native-toast-message';
 import { z } from 'zod';
 import { useAuthStore } from '../../store/authStore';
-import { useRouter } from 'expo-router';
-import Toast from 'react-native-toast-message';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),

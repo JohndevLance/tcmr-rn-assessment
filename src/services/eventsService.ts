@@ -24,6 +24,10 @@ export interface Event {
       address: {
         line1: string;
       };
+      location?: {
+        latitude: string;
+        longitude: string;
+      };
     }[];
   };
   info?: string;

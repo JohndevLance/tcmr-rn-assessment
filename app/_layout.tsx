@@ -27,6 +27,7 @@ export default function RootLayout() {
       <RNEUIThemeProvider theme={theme}>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack>
+            <Stack.Screen name="auth" options={{ headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="event-detail" options={{ title: 'Event Details' }} />
             <Stack.Screen name="+not-found" />

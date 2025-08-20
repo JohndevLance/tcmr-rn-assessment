@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import * as SecureStore from 'expo-secure-store';
 import * as LocalAuthentication from 'expo-local-authentication';
+import * as SecureStore from 'expo-secure-store';
+import { create } from 'zustand';
 
 interface User {
   id: string;
@@ -20,6 +20,7 @@ interface AuthState {
   enableBiometric: () => Promise<boolean>;
   disableBiometric: () => Promise<void>;
   checkBiometricAvailability: () => Promise<boolean>;
+  checkAuthStatus: () => Promise<void>;
 }
 
 // Mock user data
@@ -152,5 +153,39 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const hasHardware = await LocalAuthentication.hasHardwareAsync();
     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
     return hasHardware && isEnrolled;
+  },
+
+  checkAuthStatus: async () => {
+    set({ isLoading: true });
+    try {
+      const userStr = await SecureStore.getItemAsync('user');
+      const biometricEnabledStr = await SecureStore.getItemAsync('biometricEnabled');
+      
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        const biometricEnabled = biometricEnabledStr === 'true';
+        set({ 
+          user, 
+          isAuthenticated: true, 
+          biometricEnabled,
+          isLoading: false 
+        });
+      } else {
+        set({ 
+          user: null, 
+          isAuthenticated: false, 
+          biometricEnabled: false,
+          isLoading: false 
+        });
+      }
+    } catch (error) {
+      console.error('Error checking auth status:', error);
+      set({ 
+        user: null, 
+        isAuthenticated: false, 
+        biometricEnabled: false,
+        isLoading: false 
+      });
+    }
   },
 }));
