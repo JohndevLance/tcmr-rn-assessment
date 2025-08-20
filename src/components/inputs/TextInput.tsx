@@ -1,5 +1,5 @@
 import React from 'react';
-import { Controller, Control, RegisterOptions } from 'react-hook-form';
+import { Control, Controller, RegisterOptions } from 'react-hook-form';
 import { Input } from 'react-native-elements';
 
 interface TextInputProps {

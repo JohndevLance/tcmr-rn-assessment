@@ -1,11 +1,11 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import { Button, Icon, ListItem } from 'react-native-elements';
-import { useForm } from 'react-hook-form';
 import { useSearchEvents } from '../api/eventsApi';
-import { useFavouritesStore } from '../store/favouritesStore';
 import { SearchInput, TextInput } from '../components/inputs';
+import { useFavouritesStore } from '../store/favouritesStore';
 
 interface SearchForm {
   keyword: string;
